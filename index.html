@@ -1,0 +1,316 @@
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #667eea;
+        }
+
+        .ai-insights h3 {
+            color: #2d3748;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ai-insights ul {
+            list-style: none;
+            space-y: 12px;
+        }
+
+        .ai-insights li {
+            padding: 12px;
+            background: #f7fafc;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .ai-insights li:before {
+            content: "🤖";
+            position: absolute;
+            left: 12px;
+            top: 12px;
+        }
+
+        .status-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #48bb78;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="status-indicator">🟢 Live Data Streaming</div>
+    
+    <div class="dashboard">
+        <div class="header">
+            <h1>AI-Powered Business Intelligence</h1>
+            <p>Real-time analytics with machine learning insights • Last updated: <span id="lastUpdate"></span></p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Total Revenue</div>
+                <div class="metric-value" id="revenue">$0</div>
+                <div class="metric-change positive" id="revenueChange">+0%</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-label">Active Users</div>
+                <div class="metric-value" id="users">0</div>
+                <div class="metric-change positive" id="usersChange">+0%</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-label">Conversion Rate</div>
+                <div class="metric-value" id="conversion">0%</div>
+                <div class="metric-change negative" id="conversionChange">-0%</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-label">AI Prediction Score</div>
+                <div class="metric-value" id="aiScore">0</div>
+                <div class="metric-change positive" id="aiScoreChange">+0</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <h3>🎛️ Dashboard Controls</h3>
+            <div class="filter-group">
+                <label>Time Range:</label>
+                <select id="timeRange">
+                    <option value="1h">Last Hour</option>
+                    <option value="24h" selected>Last 24 Hours</option>
+                    <option value="7d">Last 7 Days</option>
+                    <option value="30d">Last 30 Days</option>
+                </select>
+                
+                <label>Data Source:</label>
+                <select id="dataSource">
+                    <option value="live">Live Stream</option>
+                    <option value="batch">Batch Processing</option>
+                    <option value="ml">ML Predictions</option>
+                </select>
+                
+                <label>Refresh Rate:</label>
+                <select id="refreshRate">
+                    <option value="1000">1 second</option>
+                    <option value="5000" selected>5 seconds</option>
+                    <option value="30000">30 seconds</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-title">📈 Revenue Trend with ML Forecast</div>
+                <div class="chart-container">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-title">👥 User Activity Distribution</div>
+                <div class="chart-container">
+                    <canvas id="userChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="ai-insights">
+            <h3>🧠 AI-Powered Insights</h3>
+            <ul id="aiInsights">
+                <li>Revenue showing strong upward trend with 15% growth acceleration</li>
+                <li>User engagement peaks detected during 2-4 PM time window</li>
+                <li>Conversion optimization opportunity identified in mobile funnel</li>
+                <li>Predictive model suggests 23% revenue increase next quarter</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Charts
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        const userCtx = document.getElementById('userChart').getContext('2d');
+
+        // Revenue Chart with ML Forecast
+        const revenueChart = new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Actual Revenue',
+                    data: [],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }, {
+                    label: 'ML Forecast',
+                    data: [],
+                    borderColor: '#ed64a6',
+                    backgroundColor: 'rgba(237, 100, 166, 0.1)',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    fill: false,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // User Activity Doughnut Chart
+        const userChart = new Chart(userCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Desktop', 'Mobile', 'Tablet'],
+                datasets: [{
+                    data: [45, 40, 15],
+                    backgroundColor: ['#667eea', '#764ba2', '#f093fb'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    }
+                }
+            }
+        });
+
+        // Real-time Data Simulation
+        let dataPoints = [];
+        let forecastPoints = [];
+        let totalRevenue = 125000;
+        let activeUsers = 2847;
+        let conversionRate = 3.2;
+        let aiScore = 87;
+
+        function generateData() {
+            const now = new Date();
+            const revenue = Math.floor(Math.random() * 10000) + 50000;
+            const forecast = revenue * (1 + Math.random() * 0.3);
+            
+            totalRevenue += Math.floor(Math.random() * 5000) - 2000;
+            activeUsers += Math.floor(Math.random() * 100) - 50;
+            conversionRate += (Math.random() - 0.5) * 0.1;
+            aiScore += Math.floor(Math.random() * 6) - 3;
+
+            // Keep arrays manageable
+            if (dataPoints.length > 20) {
+                dataPoints.shift();
+                forecastPoints.shift();
+                revenueChart.data.labels.shift();
+            }
+
+            dataPoints.push(revenue);
+            forecastPoints.push(forecast);
+            revenueChart.data.labels.push(now.toLocaleTimeString());
+
+            // Update charts
+            revenueChart.data.datasets[0].data = dataPoints;
+            revenueChart.data.datasets[1].data = forecastPoints;
+            revenueChart.update('none');
+
+            // Update metrics
+            document.getElementById('revenue').textContent = '$' + totalRevenue.toLocaleString();
+            document.getElementById('users').textContent = activeUsers.toLocaleString();
+            document.getElementById('conversion').textContent = conversionRate.toFixed(1) + '%';
+            document.getElementById('aiScore').textContent = Math.max(0, Math.min(100, aiScore));
+            
+            // Update change indicators
+            document.getElementById('revenueChange').textContent = '+' + (Math.random() * 10 + 5).toFixed(1) + '%';
+            document.getElementById('usersChange').textContent = '+' + (Math.random() * 15 + 3).toFixed(1) + '%';
+            document.getElementById('conversionChange').textContent = '-' + (Math.random() * 2 + 0.5).toFixed(1) + '%';
+            document.getElementById('aiScoreChange').textContent = '+' + Math.floor(Math.random() * 5 + 1);
+
+            document.getElementById('lastUpdate').textContent = now.toLocaleTimeString();
+        }
+
+        // Initialize with some data
+        for (let i = 0; i < 10; i++) {
+            generateData();
+        }
+
+        // Start real-time updates
+        let updateInterval = setInterval(generateData, 5000);
+
+        // Control handlers
+        document.getElementById('refreshRate').addEventListener('change', function(e) {
+            clearInterval(updateInterval);
+            updateInterval = setInterval(generateData, parseInt(e.target.value));
+        });
+
+        document.getElementById('timeRange').addEventListener('change', function(e) {
+            // In a real app, this would fetch different data ranges
+            console.log('Time range changed to:', e.target.value);
+        });
+
+        document.getElementById('dataSource').addEventListener('change', function(e) {
+            // In a real app, this would switch data sources
+            console.log('Data source changed to:', e.target.value);
+        });
+
+        // AI Insights rotation
+        const insights = [
+            "Revenue showing strong upward trend with 15% growth acceleration",
+            "User engagement peaks detected during 2-4 PM time window", 
+            "Conversion optimization opportunity identified in mobile funnel",
+            "Predictive model suggests 23% revenue increase next quarter",
+            "Anomaly detection: unusual spike in European traffic detected",
+            "Churn prediction model identifies 127 at-risk customers",
+            "A/B test results show 18% improvement in signup flow",
+            "Seasonal pattern analysis predicts 30% boost in holiday sales"
+        ];
+
+        setInterval(() => {
+            const insightsList = document.getElementById('aiInsights');
+            const randomInsights = insights.sort(() => Math.random() - 0.5).slice(0, 4);
+            insightsList.innerHTML = randomInsights.map(insight => `<li>${insight}</li>`).join('');
+        }, 15000);
+    </script>
+</body>
+</html>
